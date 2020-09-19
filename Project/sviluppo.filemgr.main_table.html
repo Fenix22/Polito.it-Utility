@@ -1,0 +1,110 @@
+<table class="table mb0 table-files noselect container-viewport">
+<thead><tr>
+
+            <th>
+                <a href="">
+                    <span class="sortorder" ng-show="predicate[1] === 'model.type'" ng-class="{reverse:reverse}"></span>
+                </a>
+            </th>
+             <th>
+                <a href="" ng-click="order('model.name')">
+                    {{"name" | translate}}
+                    <span class="sortorder" ng-show="predicate[1] === 'model.name'" ng-class="{reverse:reverse}"></span>
+                </a>
+            </th>
+            <th class="hidden-xs" ng-hide="config.hideSize">
+                <a href="" ng-click="order('model.size')">
+                    {{"size" | translate}}
+                    <span class="sortorder" ng-show="predicate[1] === 'model.size'" ng-class="{reverse:reverse}"></span>
+                </a>
+            </th>
+            <th class="hidden-sm hidden-xs" ng-hide="config.hideDate">
+                <a href="" ng-click="order('model.date')">
+                    {{"date" | translate}}
+                    <span class="sortorder" ng-show="predicate[1] === 'model.date'" ng-class="{reverse:reverse}"></span>
+                </a>
+            </th>
+</tr></thead>
+
+    <tbody class="file-item">
+        <tr ng-show="fileNavigator.requesting">
+            <td colspan="5">
+                <div ng-include="'sviluppo.filemgr.spinner_html'"></div>
+            </td>
+        </tr>
+
+        <tr class="hidden-sm hidden-md hidden-lg" ng-show="!fileNavigator.requesting &amp;&amp; fileNavigator.fileList.length < 1 &amp;&amp; notMatComune &amp;&amp; !fileNavigator.error">
+            <td colspan="5">
+                {{"no_files_in_folder" | translate}}...
+            </td>
+        </tr>
+        <tr class="hidden-xs" ng-show="!fileNavigator.requesting &amp;&amp; totalIncFiles < 1 &amp;&amp; notMatComune &amp;&amp; !fileNavigator.error">
+            <td colspan="5">
+                {{"no_files_in_folder" | translate}}...
+            </td>
+        </tr>
+        <tr ng-show="!fileNavigator.requesting &amp;&amp; fileNavigator.error">
+            <td colspan="5">
+                {{ fileNavigator.error | translate }} &nbsp;&nbsp;
+                <span ng-if="fileNavigator.error === 'error_busy'" ><a href="javascript:void(null);" onclick="location.reload()">{{"reload" | translate}}</a></span>
+            </td>
+        </tr>
+ <tr  ng-repeat="item in $parent.fileList = (fileNavigator.fileList | filter: {model:{name: query}} | orderBy:predicate:reverse)" 
+                                  ng-hide="item.model.id" ng-show="!fileNavigator.requesting" ng-class="{selected: isSelected(item)}">
+ 
+                  <td style="text-align:center;">
+                    
+                    <a ng-show="item.model.type === 'file'" href="https://file.didattica.polito.it/download/MATDID/{{item.model.code}}?download">
+                      <i class="glyphicon glyphicon-save"></i>
+                    </a> 
+
+                    <a ng-show="item.model.type === 'dir'" href="" ng-click='onDirectoryDownloadClicked(item, $event)'>
+                        <i class="glyphicon glyphicon-download-alt"></i>
+                      </a> 
+                  </td>    
+                     <td   class="item-list" ng-click="singleClickStud(item, $event)" ng-dblclick="smartClick(item)"   ng-right-click="selectOrUnselect(item, $event)">
+                          <a href="" title="{{item.model.name}} ({{item.model.size | humanReadableFileSize}})">
+                              <i class="glyphicon glyphicon-folder-close" ng-show="item.model.type === 'dir'"></i>
+                              <i class="glyphicon glyphicon-file text-warning" ng-show="item.model.type === 'file'"></i>
+                              <span ng-class="{'text-warning': item.model.type === 'file', strike: item.model.visible == 'L'}">{{item.model.name | strLimit : 64}}</span>
+                          </a>
+                      </td>
+                      
+<td class="hidden-xs">
+                <span ng-show="item.model.type !== 'dir' || config.showSizeForDirectories">
+                    {{item.model.size | humanReadableFileSize}}
+                </span>
+            </td>
+            <td class="hidden-sm hidden-xs" ng-hide="config.hideDate">
+                {{item.model.date | date:"dd/MM/yyyy HH:mm:ss" }}
+            </td>
+</tr>
+<tr class="item-list" ng-repeat="item in fileNavigator.fileList | orderBy:'model.name'" ng-show="!fileNavigator.requesting && item.model.id">
+            <td class="hidden-sm hidden-md hidden-lg">
+              <a href="{{item.model.link}}" class="videoLezLink animated fast fadeInDown">
+                  <i class="glyphicon glyphicon-film mr2"></i> {{item.model.name | trimLezioniFilter | strLimit : 64}}
+                  <span ng-show="item.model.id_nota" class="small"><mark>{{item.model.id_nota}}</mark></span>
+              </a>
+            </td>
+         </tr>
+</tr>
+</tbody>
+</table>
+<script type="text/ng-template" id="tooltip">
+        <div class="triangle"></div>
+        <div class="ns-popover-tooltip" style="font-size:1em">
+          <div class="text-danger h6" style="border-bottom:1px solid #ccc;">Accesso</div>
+          <div class="row h6"><div class="col-xs-12">
+          <div class="col-xs-2 h6"><i class="glyphicon glyphicon-user text-danger"></i></div>
+          <div class="col-xs-10">solo agli studenti del corso</div>
+          </div></div>
+          <div class="row h6"><div class="col-xs-12">
+          <div class="col-xs-2 h6"><i class="glyphicon glyphicon-user text-warning-ico"></i></div>
+          <div class="col-xs-10">a tutti gli studenti di corsi con lo sesso cod. ins.</div>
+          </div></div>
+          <div class="row h6"><div class="col-xs-12">
+          <div class="col-xs-2 h6"><i class="glyphicon glyphicon-user text-success"></i></div>
+          <div class="col-xs-10">a tutti gli studenti registrati sul Portale della didattica
+          </div></div>
+        </div>
+       </script>
